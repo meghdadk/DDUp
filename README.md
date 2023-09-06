@@ -39,9 +39,9 @@ The link to some of the datasets:
 
 ## References
 
-Reference
 If you find this repository useful in your work, please cite our SIGMOD23 paper:
 
+```bibtex
 @article{kurmanji2023detect,
   title={Detect, Distill and Update: Learned DB Systems Facing Out of Distribution Data},
   author={Kurmanji, Meghdad and Triantafillou, Peter},
