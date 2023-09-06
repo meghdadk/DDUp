@@ -141,14 +141,14 @@ def cal_avg(probs, regs, step, frequencies):
 
     return _avg
 
-def cal_err(reals, predictions, _type, agg, model_num):
-    result_file = os.path.join("benchmark/result_"+ agg + str(model_num).zfill(2)+'.csv')
+def cal_err(old_reals, reals, predictions, _type, agg, model_num, model_name):
+    result_file = os.path.join("benchmark/result_"+ agg + "_" + model_name +'.csv')
     if _type == "q-error":
         err = lambda r, p: np.max([r/p,p/r])
     if _type == "relative-error":
         err = lambda r, p: 100 * abs((r-p)/r)
     with open(result_file, 'w') as res:
-        res.write("err, estimated, true\n")
+        res.write("err, estimated, true, old_true\n")
         selected_queries = []
         if model_num == 0:
             errors = []
@@ -157,7 +157,7 @@ def cal_err(reals, predictions, _type, agg, model_num):
                     e = err(reals[key], predictions[key])
                     #print (reals[key], predictions[key], e)
                     errors.append(e)
-                    res.write(str(e)+','+str(predictions[key])+','+str(reals[key])+'\n')
+                    res.write(str(e)+','+str(predictions[key])+','+str(reals[key])+','+str(old_reals[key])+'\n')
                     selected_queries.append(query_num)
             print ("mean {} = {}, median = {}, 95th={}, 99th={}, max={}".format(_type,
                 np.mean(errors),np.median(errors), np.percentile(np.array(errors),95),
@@ -169,7 +169,7 @@ def cal_err(reals, predictions, _type, agg, model_num):
                 if query_num in selected_queries:
                     e = err(reals[key], predictions[key])
                     errors.append(e)
-                    res.write(str(e)+','+str(predictions[key])+','+str(reals[key])+'\n')
+                    res.write(str(e)+','+str(predictions[key])+','+str(reals[key])+','+str(old_reals[key])+'\n')
 
             print ("mean {} = {}, median = {}, 95th={}, 99th={}, max={}".format(_type,
                 np.mean(errors),np.median(errors), np.percentile(np.array(errors),95),
@@ -535,7 +535,7 @@ def run_queries(basemodel, modelsdir, benchmarkdir, _type, integral_points=100):
 
         cal_err(reals, predictions, _type, agg, model_num)
 
-def run_single_file(model, query_file, ground_truth, _type, integral_points=100):
+def run_single_file(model, query_file, ground_truth, old_ground_truth, _type, integral_points=100):
 
     M = None
     with open(model, 'rb') as d:
@@ -561,6 +561,13 @@ def run_single_file(model, query_file, ground_truth, _type, integral_points=100)
                 reals[i] = 0
             
 
+    old_reals = {}
+    with open(old_ground_truth,'r') as file:
+        for i, line in enumerate(file):
+            try:
+                old_reals[i] = float(line.split(',')[0])
+            except:
+                old_reals[i] = 0
 
     predictions = {}
     freqs = {}
@@ -623,8 +630,7 @@ def run_single_file(model, query_file, ground_truth, _type, integral_points=100)
         #print (reals[i], predictions[i])
 
 
-    cal_err(reals, predictions, _type, agg, 0)
-
+    cal_err(old_reals, reals, predictions, _type, agg, 0, model)
 
 def plot(model, input):
     M = None
@@ -659,12 +665,12 @@ def plot(model, input):
 if __name__=="__main__":
     
     #log_likelihood_test(basemodel='DenMDN_census.dill', testset='data/test_set.csv', updatemodels='.', update_testsets='data/update_batches')
-    #for agg in ['count', 'sum', 'avg']:
+    #for agg in ['count']:
     #    query_gt_setup(main_train_file="./data/train_set.csv", updates_dir='./data/update_batches/',
     #                   benchmark_dir='benchmark/alldata', cat_att="ss_quantity", range_att="ss_sales_price", 
     #                   sep=',', type='alldata', agg=agg)
-    run_single_file(model="DenMDN_tpcds01.dill",query_file='benchmark/alldata/count01.sql', ground_truth='benchmark/alldata/count01.csv', _type='q-error')
-    run_single_file(model="DenMDN_tpcds01.dill",query_file='benchmark/alldata/sum01.sql', ground_truth='benchmark/alldata/sum01.csv', _type='relative-error')
-    run_single_file(model="DenMDN_tpcds01.dill",query_file='benchmark/alldata/avg01.sql', ground_truth='benchmark/alldata/avg01.csv', _type='relative-error')
+    run_single_file(model="update01.dill",query_file='benchmark/alldata/count01.sql', ground_truth='benchmark/alldata/count01.csv', old_ground_truth='benchmark/alldata/count00.csv', _type='q-error')
+    #run_single_file(model="DenMDN_tpcds01.dill",query_file='benchmark/alldata/sum01.sql', ground_truth='benchmark/alldata/sum01.csv', _type='relative-error')
+    #run_single_file(model="DenMDN_tpcds01.dill",query_file='benchmark/alldata/avg01.sql', ground_truth='benchmark/alldata/avg01.csv', _type='relative-error')
     #plot('DenMDN_flight.dill', 'united kingdom')
 

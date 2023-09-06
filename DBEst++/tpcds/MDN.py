@@ -863,7 +863,7 @@ def train(mode,name):
 
     d.create_encoders(x_values)
     d.create_frequency_tables(x_values)
-    d.get_normalizing_stats(data=y_values, min_max=None)#{'ss_sold_date_sk':(2450816.0, 2452642.0)}) 
+    d.get_normalizing_stats(data=y_values, min_max=None)
     y_normalized = d.normalize(y_values)
     x_encoded = {}
     for key in x_values.keys():
@@ -1117,7 +1117,7 @@ def update_with_finetune(basemodel):
 
        
         pre_model = batch.split('.')[0]+'.dill'
-        with open('updatedFT'+str(num+1).zfill(2)+'.dill','wb') as d:
+        with open('finetuned'+str(num+1).zfill(2)+'.dill','wb') as d:
             dill.dump(model,d)
 
 
