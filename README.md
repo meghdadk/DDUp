@@ -13,7 +13,6 @@ To develope DDUp, we have used the source codes published by the respective work
 
 [TVAE](https://github.com/sdv-dev/CTGAN)
 
-The experiments in the paper are for six public datasets. For DBest++, we have used a query template with two columns and have added the modified datasets in the related folders. For TVAE, we have used a samller (1m) sample of DMV dataset, as it was too expensive to train TVAE on the full data.
 
 ## Setup
 
@@ -28,6 +27,8 @@ For TVAE: The train/update procedures are located in the tvae_train.py. The eval
 The codes are tested for Python3.6 and Pytorch 1.9
 
 ## Datasets
+The experiments in the paper are for six public datasets. For DBest++, we have used a query template with two columns and have added the modified datasets in the related folders. For TVAE, we have used a samller (1m) sample of DMV dataset, as it was too expensive to train TVAE on the full data.
+
 The link to some of the datasets:
 
 [Census](https://archive.ics.uci.edu/ml/datasets/census+income)
